@@ -49,9 +49,12 @@ void ICACHE_FLASH_ATTR update_lights(void *p, int s)
 	if (s>0)
 	{
 		ws2812_push( p, s );
-		if ( (SETTINGS.flag_send_DMX==TRUE) && (idle_counter!=0) ) 
-			dmx_send (p, s);
-		else	uart0_sendStr("X");
+		if ( SETTINGS.flag_send_DMX==TRUE ) 
+		{
+			if (idle_counter!=0) 				// Dont flash DMX fixture just the WS28XX LEDs 
+				dmx_send (p, s);
+		}
+		else	uart0_sendStr("X");				// Uart TX not DMX so use for debug messages
 	}
 }
 
