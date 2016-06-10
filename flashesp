@@ -1,0 +1,30 @@
+#!/bin/bash
+# Flash JAHTTP onto a module
+
+#BAUD=115200
+BAUD=230400
+PORT=/dev/ttyUSB0
+
+
+if [ "$1" == "f" ]; then
+	touch ./MEMORY_FS_OUT_OF_DATE
+fi
+
+# Flash new version of code onto module
+if [ -f ./MEMORY_FS_OUT_OF_DATE ]; then
+# Update memory including memory file system segment
+	esptool.py --port $PORT --baud $BAUD write_flash 0x40000 0x40000.bin 0x00000 0x00000.bin 0x10000 web/page.mpfs
+	rm ./MEMORY_FS_OUT_OF_DATE
+else
+	esptool.py --port $PORT --baud $BAUD write_flash -fs=32m 0x40000 0x40000.bin 0x00000 0x00000.bin
+fi
+
+
+
+# To read config record
+#sptool.py --port /dev/ttyUSB0 --baud 115200 read_flash 0x3FE000 4096 config.bin
+
+# Write a blank one
+#dd if=/dev/zero of=config_blank.bin bs=4096 count=1
+#esptool.py --port /dev/ttyUSB0 --baud 115200 write_flash 0x3FE000 config_blank.bin
+
