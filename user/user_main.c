@@ -24,7 +24,7 @@
 
 #define procTaskPrio        0
 #define procTaskQueueLen    1
-#define FLASH_AFTER_N_SECONDS	2
+#define FLASH_AFTER_N_SECONDS	3 * 2					// Unit is really half seconds so multiply by 2
 
 static volatile os_timer_t some_timer;
 static struct espconn *pUdpServer;
