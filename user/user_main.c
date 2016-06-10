@@ -1,13 +1,8 @@
 //Copyright 2015 <>< Charles Lohr, see LICENSE file.
 
-// JA Remove comments later
-// JA: Re-structured code to be per single output of WS chip rather than per RGB tripplet.
-//   the WS IC is just a long shift register, it is *often* the case that each IC is driving a single
-//   RGB LED (as per its design) and it is perfectly sensible to assume so for the web front end.  
-//   In my opinion though the underlying code should be per single WS output (LED) rather than per 
-//   tripplet (Pixel) It is possibe to have only monochrome LEDs or missuse the IC as a power 
-//   LED PWM driver, through the magic of ebay and my soldering iron such things are available :-)
-
+// JA modified
+//	Second LED (first pixel, green) flashes when no UDP data has been recieved for 4 seconds
+//	Added template for DMX send on TX pin 
  
 #include "mem.h"
 #include "c_types.h"
@@ -98,12 +93,13 @@ static void ICACHE_FLASH_ATTR myTimer_cb(void *arg)
 			idle_counter--;
 		else
 		{						// idle timer expired, flash first RGB LED at 1/2Hz
+			os_bzero(&last_leds,sizeof(last_leds));	// No idea why the array has crap in it at this point
 			onoff=onoff^1;
 			if (onoff==1)
 			{
-				last_leds[0]=64;
-				last_leds[1]=64;
-				last_leds[2]=64;
+				//last_leds[0]=16;
+				last_leds[1]=16;
+				//last_leds[2]=16;
 			}
 			else
 			{
@@ -111,7 +107,7 @@ static void ICACHE_FLASH_ATTR myTimer_cb(void *arg)
 				last_leds[1]=0;
 				last_leds[2]=0;
 			}
-			update_lights( last_leds, 3 );
+			update_lights( last_leds, sizeof(last_leds) );
 		}
 	}
 	CSTick( 1 );
@@ -143,6 +139,7 @@ void ICACHE_FLASH_ATTR charrx( uint8_t c )
 
 void user_init(void)
 {
+	int i;
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(10000);
 	if (SETTINGS.flag_send_DMX==TRUE)
@@ -160,7 +157,8 @@ void user_init(void)
 	espconn_create( pUdpServer );
 	pUdpServer->type = ESPCONN_UDP;
 	pUdpServer->proto.udp = (esp_udp *)os_zalloc(sizeof(esp_udp));
-	pUdpServer->proto.udp->local_port = SETTINGS.UDP_port;
+	//pUdpServer->proto.udp->local_port = SETTINGS.UDP_port;
+	pUdpServer->proto.udp->local_port = 7777;
 	espconn_regist_recvcb(pUdpServer, udpserver_recv);
 
 	if( espconn_create( pUdpServer ) )
@@ -189,7 +187,6 @@ void user_init(void)
 
 	idle_counter=FLASH_AFTER_N_SECONDS;
 	os_bzero(&last_leds,sizeof(last_leds));
-	update_lights((uint8_t*)&last_leds,sizeof(last_leds));
 	update_lights((uint8_t*)&last_leds,sizeof(last_leds));
 
 	printf( "Boot Ok.\n" );
