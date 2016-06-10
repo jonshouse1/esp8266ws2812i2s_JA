@@ -44,8 +44,10 @@ int number_of_leds=0;			// JA number of 8 bit brightness values in the last UDP 
 
 
 // pointer, size
-void ICACHE_FLASH_ATTR update_lights(void *p, int s)
+//void ICACHE_FLASH_ATTR update_lights(void *p, int s)
+void ICACHE_FLASH_ATTR update_lights(uint8_t *p, int s)
 {
+	printf("update_lights: size=%d  [0]=%d\t[1]=%d\t[2]=%d\t[3]=%d\n",s,p[0],p[1],p[2],p[3]);
 	if (s>0)
 	{
 		ws2812_push( p, s );
@@ -89,14 +91,14 @@ static void ICACHE_FLASH_ATTR myTimer_cb(void *arg)
 	static uint8 onoff=0;
 
 	sc++;
-	if (sc>5)						// Half second 
+	if (sc>4)						// Half second 
 	{
 		sc=0;
 		if (idle_counter>0)
 			idle_counter--;
 		else
 		{						// idle timer expired, flash first RGB LED at 1/2Hz
-			~onoff;
+			onoff=onoff^1;
 			if (onoff==1)
 			{
 				last_leds[0]=64;
@@ -109,6 +111,7 @@ static void ICACHE_FLASH_ATTR myTimer_cb(void *arg)
 				last_leds[1]=0;
 				last_leds[2]=0;
 			}
+			update_lights( last_leds, 3 );
 		}
 	}
 	CSTick( 1 );
@@ -121,6 +124,7 @@ udpserver_recv(void *arg, char *pusrdata, unsigned short len)
 {
 	struct espconn *pespconn = (struct espconn *)arg;
 
+SETTINGS.Firstled=0;
 	if (SETTINGS.Firstled < len)
 	{
 		number_of_leds=len-SETTINGS.Firstled;
@@ -128,7 +132,7 @@ udpserver_recv(void *arg, char *pusrdata, unsigned short len)
 	}
 	else	number_of_leds=0;				// If Firstled is beyond the packet end then its invalid
 
-	update_lights( pusrdata+SETTINGS.Firstled, number_of_leds );
+	update_lights( last_leds, number_of_leds );
 	idle_counter=FLASH_AFTER_N_SECONDS;
 }
 
@@ -140,6 +144,7 @@ void ICACHE_FLASH_ATTR charrx( uint8_t c )
 void user_init(void)
 {
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
+	os_delay_us(10000);
 	if (SETTINGS.flag_send_DMX==TRUE)
 		dmx_init();							// Override uart settings with new ones
 	else	uart0_sendStr("\r\n\033cesp8266 ws2812 driver\r\n");
@@ -184,7 +189,8 @@ void user_init(void)
 
 	idle_counter=FLASH_AFTER_N_SECONDS;
 	os_bzero(&last_leds,sizeof(last_leds));
-	update_lights(&last_leds,sizeof(last_leds));
+	update_lights((uint8_t*)&last_leds,sizeof(last_leds));
+	update_lights((uint8_t*)&last_leds,sizeof(last_leds));
 
 	printf( "Boot Ok.\n" );
 

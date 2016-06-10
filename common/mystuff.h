@@ -29,7 +29,8 @@ extern char generic_print_buffer[384];
 
 extern const char * enctypes[6];// = { "open", "wep", "wpa", "wpa2", "wpa_wpa2", 0 };
 
-#define printf( ... ) { ets_sprintf( generic_print_buffer, __VA_ARGS__ );  uart0_sendStr( generic_print_buffer ); }
+//#define printf( ... ) { ets_sprintf( generic_print_buffer, __VA_ARGS__ );  uart0_sendStr( generic_print_buffer ); }
+#define printf( ... ) { ets_sprintf( generic_print_buffer, __VA_ARGS__ ); uart0_sendStr( generic_print_buffer ); uart0_sendStr("\r"); }
 
 char tohex1( uint8_t i );
 int8_t fromhex1( char c ); //returns -1 if not hex char.

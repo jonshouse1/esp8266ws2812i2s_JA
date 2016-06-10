@@ -979,7 +979,7 @@ void ICACHE_FLASH_ATTR CSSettingsLoad(int force_reinit)
 
 	wifi_station_set_hostname( SETTINGS.DeviceName );
 
-	printf( "Settings Loaded: %s / %s\n", SETTINGS.DeviceName, SETTINGS.DeviceDescription );
+	printf( "Settings Loaded: %/s / %s\n", SETTINGS.DeviceName, SETTINGS.DeviceDescription );
 }
 
 void ICACHE_FLASH_ATTR CSSettingsSave()
