@@ -39,10 +39,9 @@ int number_of_leds=0;			// JA number of 8 bit brightness values in the last UDP 
 
 
 // pointer, size
-//void ICACHE_FLASH_ATTR update_lights(void *p, int s)
 void ICACHE_FLASH_ATTR update_lights(uint8_t *p, int s)
 {
-	printf("update_lights: size=%d  [0]=%d\t[1]=%d\t[2]=%d\t[3]=%d\n",s,p[0],p[1],p[2],p[3]);
+	//printf("update_lights: size=%d  [0]=%d\t[1]=%d\t[2]=%d\t[3]=%d\n",s,p[0],p[1],p[2],p[3]);
 	if (s>0)
 	{
 		ws2812_push( p, s );
