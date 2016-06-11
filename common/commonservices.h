@@ -31,9 +31,14 @@ struct CommonSettings
 	char DeviceName[MAX_DEVICE_NAME];
 	char DeviceDescription[MAX_DEVICE_NAME];
 	char UserData[USERDATA_SIZE];
-	int  Firstled;					// JA Offset (in bytes) of first brightness value in UDP payload
-	int  UDP_port;
-	int  flag_send_DMX;				// JA Optionally send DMX512 on UART TX pin instead of debug messages
+
+//JA These need to be inside UserData somehow .. maybe ...
+	int  FirstDMX;					// Offset (in bytes) of first brightness value for DMX in UDP payload 
+	int  DMXdlength;				// Number of bytes to process from UDP data, 0=All available
+	int  Firstled;					// Offset (in bytes) of first brightness value for WS28XX LEDs in UDP payload
+	int  leddlength					// Number of bytes to process from UDP data, 0=All available 
+	int  UDP_port;					// Listening UDP port, reset required after change
+	int  flag_send_DMX;				// Optionally send DMX512 on GPIO2
 } __attribute__((packed, aligned(4)));
 
 extern struct CommonSettings SETTINGS;
