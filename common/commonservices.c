@@ -857,11 +857,8 @@ static void ICACHE_FLASH_ATTR SlowTick( int opm )
 			printf( "Connection failed: %d\n", stat );
 			retry_count++;
 			if( retry_count > MAX_RETRY_COUNT )
-			{
-				SwitchToSoftAP(); //XXX WARNING: This does not /actually/ work.
-			} else {
-				wifi_station_connect(); //re-attempt... 3x.
-			}
+				SwitchToSoftAP(); 			//XXX WARNING: This does not /actually/ work.
+			else	wifi_station_connect(); 		//re-attempt... 3x.
 			printed_ip = 0;
 		}
 		else if( stat == STATION_GOT_IP && !printed_ip )
@@ -963,8 +960,13 @@ void ICACHE_FLASH_ATTR CSSettingsLoad(int force_reinit)
 
 		uint8_t sysmac[6];
 		printf( "Settings uninitialized.  Initializing.\n" );
-		SETTINGS.UDP_port=7777;
+
+//JA added
+		SETTINGS.FirstDMX=0;
+        	SETTINGS.DMXdlength=0;
 		SETTINGS.Firstled=0;
+		SETTINGS.leddlength=0;
+		SETTINGS.UDP_port=7777;
 		SETTINGS.flag_send_DMX=FALSE;
 		if( !wifi_get_macaddr( 0, sysmac ) );
 			wifi_get_macaddr( 1, sysmac );

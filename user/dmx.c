@@ -1,5 +1,8 @@
 // DMX512 on GPIO2
 
+// UART0 is the default uart on TX/RX Pin
+// UART1 is TX only? and can be routed to pins, in this case GPIO2
+
 #include "mem.h"
 #include "c_types.h"
 #include "user_interface.h"
@@ -7,6 +10,7 @@
 #include "driver/uart.h"
 #include "osapi.h"
 #include "espconn.h"
+#include "mystuff.h"
 
 
 #define DMX_USIZE	512
@@ -33,6 +37,7 @@ void ICACHE_FLASH_ATTR dmx_send( uint8_t * buffer, uint16_t buffersize )
 	else	ch=DMX_USIZE;				// less than or equal to 512 values
 		
 
+	//printf("Doing DMX send %d lights\n",ch);
         //BREAK
         gpio_output_set(0, BIT2, BIT2, 0);
         PIN_FUNC_SELECT(PERIPHS_IO_MUX_GPIO2_U, FUNC_GPIO2);

@@ -2,7 +2,7 @@
 
 // JA modified
 //	Second LED (first pixel, green) flashes when no UDP data has been recieved for 4 seconds
-//	Added template for DMX send on TX pin 
+//	DMX code now in, but not yet tested
  
 #include "mem.h"
 #include "c_types.h"
@@ -41,6 +41,7 @@ int number_of_leds=0;			// JA number of 8 bit brightness values in the last UDP 
 // pointer, size
 void ICACHE_FLASH_ATTR update_lights(uint8_t *p, int s)
 {
+SETTINGS.flag_send_DMX=TRUE;
 	//printf("update_lights: size=%d  [0]=%d\t[1]=%d\t[2]=%d\t[3]=%d\n",s,p[0],p[1],p[2],p[3]);
 	if (s>0)
 	{
@@ -50,7 +51,7 @@ void ICACHE_FLASH_ATTR update_lights(uint8_t *p, int s)
 			if (idle_counter!=0) 				// Dont flash DMX fixture just the WS28XX LEDs 
 				dmx_send (p, s);
 		}
-		else	uart0_sendStr("X");				// Uart TX not DMX so use for debug messages
+		uart0_sendStr("X");
 	}
 }
 
@@ -142,11 +143,11 @@ void user_init(void)
 	uart_init(BIT_RATE_115200, BIT_RATE_115200);
 	os_delay_us(10000);
 	if (SETTINGS.flag_send_DMX==TRUE)
-		dmx_init();							// Override uart settings with new ones
-	else	uart0_sendStr("\r\n\033cesp8266 ws2812 driver\r\n");
+		dmx_init();							// Setup AURT1 on GPIO2
+	uart0_sendStr("\r\n\033cesp8266 ws2812 driver\r\n");
 
 //Uncomment this to force a system restore.
-//	system_restore();
+	//system_restore();
 
 	CSSettingsLoad( 0 );
 	CSPreInit();

@@ -68,10 +68,7 @@ void ICACHE_FLASH_ATTR HTTPGotData( )
 					curhttp->state = HTTP_STATE_DATA_WEBSOCKET;
 					curhttp->state_deets = 0;
 				}
-				else
-				{
-					curhttp->state = HTTP_STATE_WAIT_PROTO; 
-				}
+				else	curhttp->state = HTTP_STATE_WAIT_PROTO; 
 			}
 			break;
 		case HTTP_STATE_WAIT_PROTO:
@@ -107,13 +104,8 @@ void ICACHE_FLASH_ATTR HTTPGotData( )
 			break;
 		case HTTP_WAIT_CLOSE:
 			if( curhttp->keep_alive )
-			{
 				curhttp->state = HTTP_STATE_WAIT_METHOD;
-			}
-			else
-			{
-				HTTPClose( );
-			}
+			else	HTTPClose( );
 			break;
 		default:
 			break;
@@ -133,26 +125,16 @@ static void DoHTTP( uint8_t timed )
 		if( TCPCanSend( curhttp->socket, 1024 ) ) //TCPDoneSend
 		{
 			if( curhttp->is_dynamic )
-			{
 				HTTPCustomCallback( );
-			}
-			else
-			{
-				HTTPHandleInternalCallback( );
-			}
+			else	HTTPHandleInternalCallback( );
 		}
 		break;
 	case HTTP_WAIT_CLOSE:
 		if( TCPDoneSend( curhttp->socket ) )
 		{
 			if( curhttp->keep_alive )
-			{
 				curhttp->state = HTTP_STATE_WAIT_METHOD;
-			}
-			else
-			{
-				HTTPClose( );
-			}
+			else	HTTPClose( );
 		}
 		break;
 	case HTTP_STATE_DATA_WEBSOCKET:
@@ -165,9 +147,7 @@ static void DoHTTP( uint8_t timed )
 		if( timed )
 		{
 			if( curhttp->timeout++ > HTTP_SERVER_TIMEOUT )
-			{
 				HTTPClose( );
-			}
 		}
 	}
 }

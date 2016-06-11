@@ -32,11 +32,11 @@ struct CommonSettings
 	char DeviceDescription[MAX_DEVICE_NAME];
 	char UserData[USERDATA_SIZE];
 
-//JA These need to be inside UserData somehow .. maybe ...
+// JA These need to be inside UserData 
 	int  FirstDMX;					// Offset (in bytes) of first brightness value for DMX in UDP payload 
 	int  DMXdlength;				// Number of bytes to process from UDP data, 0=All available
 	int  Firstled;					// Offset (in bytes) of first brightness value for WS28XX LEDs in UDP payload
-	int  leddlength					// Number of bytes to process from UDP data, 0=All available 
+	int  leddlength;				// Number of bytes to process from UDP data, 0=All available 
 	int  UDP_port;					// Listening UDP port, reset required after change
 	int  flag_send_DMX;				// Optionally send DMX512 on GPIO2
 } __attribute__((packed, aligned(4)));
